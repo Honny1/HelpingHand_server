@@ -1,0 +1,13 @@
+venv/
+dist/
+*.pyc
+*.pyo
+.idea/
+local.conf
+MANIFEST
+*.swp
+
+/build
+/dist
+/*egg-info
+

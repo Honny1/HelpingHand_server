@@ -1,1 +1,1 @@
-# HelpingHand_server
+This is project to Erasmus+.
