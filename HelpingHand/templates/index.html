@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Secret title</title>
+    {% load static %}
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link type="text/css" rel="stylesheet" href="../static/css/materialize.min.css" media="screen,projection"/>
+    <link type="text/css" rel="stylesheet" href="../static/css/style.css" media="screen,projection"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+</head>
+<body>
+
+
+<nav style="background: rgba(0,0,0,0.31)">
+    <div class="nav-wrapper container">
+        <a href="" class="brand-logo center">Helping Hand</a>
+        <ul id="nav-mobile" class="right hide-on-med-and-down">
+            <li><a href="logout">Logout</a></li>
+        </ul>
+    </div>
+</nav>
+<main class="container">
+    <div class="row small-preview">
+        <ul class="collection with-header">
+            <li class="collection-header"><b>First Names</b></li>
+            <li class="collection-item ">Alvin
+                <div class="secondary-content">
+                    <a href="#popup1"><i class="material-icons">settings</i></a>
+                </div>
+
+                <div class="secondary-content" style="margin-right: 15px">
+                    <div class="switch">
+                        <label>
+                            Off
+                            <!--CapacityChart(this);-->
+                            <input type="checkbox" onclick="">
+                            <span class="lever"></span>
+                            On
+                        </label>
+                    </div>
+
+                </div>
+            </li>
+        </ul>
+
+
+    </div>
+</main>
+
+<div id="popup1" class="overlay">
+	<div class="popup">
+		<h2>Here i am</h2>
+		<a class="close" href="#">&times;</a>
+		<div class="content">
+			OPTIONS
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+    function CapacityChart(input) {
+        if (input.checked) {
+            $.ajax({
+                url: '/api/turnLight/',
+                data: {
+                    'username': "12312"
+                },
+                success: function (data) {
+                    console.log(data)
+
+                }
+            });
+
+        }
+
+
+    }
+</script>
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script type="text/javascript" src="../static/js/materialize.min.js"></script>
+<script type="text/javascript" src="../static/js/script.js"></script>
+</body>
+</html>
