@@ -3,7 +3,7 @@ from django.db import models
 
 class User(models.Model):
     username = models.CharField(max_length=30)
-    password = models.CharField(max_length=30)
+    password = models.CharField(max_length=300)
     mail = models.EmailField(default="")
 
     def right_user(self, username, password):
