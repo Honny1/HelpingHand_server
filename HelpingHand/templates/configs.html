@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Secret title</title>
+    {% load static %}
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link type="text/css" rel="stylesheet" href="../static/css/materialize.min.css" media="screen,projection"/>
+    <link type="text/css" rel="stylesheet" href="../static/css/style.css" media="screen,projection"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+</head>
+<body>
+
+
+<nav style="background: rgba(0,0,0,0.31)">
+    <div class="nav-wrapper container">
+        <a href="" class="brand-logo center">Helping Hand</a>
+        <ul id="nav-mobile" class="right hide-on-med-and-down">
+            <li><a href="logout">Logout</a></li>
+        </ul>
+    </div>
+</nav>
+<main class="container">
+    <div class="row small-preview">
+        <ul class="collapsible" data-collapsible="accordion">
+            {% for config in Configs %}
+                <li>
+                    <div class="collapsible-header"><i class="material-icons">filter_drama</i>{{ config.name }}</div>
+                    <div class="collapsible-body" style="background: #ffffff">
+
+                        <form action="/save_data">
+
+                            <div class="row">
+                                <label class="col s3">
+                                    <div class="range-field">
+                                        Hours
+                                        <input name="hours[]" value="{{ config.hours }}" type="range" min="0" max="23">
+                                    </div>
+                                    <div class="range-field">
+                                        Minutes
+                                        <input name="minutes[]" value="{{ config.minutes }}" type="range" min="0"
+                                               max="59">
+                                    </div>
+                                </label>
+                                <div class="col s9">
+                                    <input placeholder="Name" id="first_name" type="text" value="{{ config.name }}"
+                                           class="validate">
+                                    {% for day in Days %}
+                                        {% if day in Selected_day %}
+                                            <input checked type="checkbox" name="days[]" id="{{ config.id }}{{ day }}"/>
+                                        {% else %}
+                                            <input type="checkbox" name="days[]" id="{{ config.id }}{{ day }}"/>
+                                        {% endif %}
+                                        <label for="{{ config.id }}{{ day }}"
+                                               style="margin-right: 20px">{{ day }}</label>
+                                    {% endfor %}
+
+                                    <button class="btn waves-effect waves-light" type="submit" name="action">Submit
+                                        <i class="material-icons right">send</i>
+                                    </button>
+
+                                </div>
+
+                            </div>
+                        </form>
+                    </div>
+                </li>
+
+            {% endfor %}
+        </ul>
+
+
+    </div>
+</main>
+
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script type="text/javascript" src="../static/js/materialize.min.js"></script>
+<script type="text/javascript" src="../static/js/script.js"></script>
+</body>
+</html>

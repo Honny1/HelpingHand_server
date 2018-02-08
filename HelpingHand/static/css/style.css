@@ -74,3 +74,13 @@ body {
   max-height: 30%;
   overflow: auto;
 }
+
+.btn-link{
+  border:none;
+  outline:none;
+  background:none;
+  cursor:pointer;
+  padding:0;
+  font-family:inherit;
+  font-size:inherit;
+}

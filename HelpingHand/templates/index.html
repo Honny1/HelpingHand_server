@@ -25,55 +25,77 @@
     <div class="row small-preview">
         <ul class="collection with-header">
             <li class="collection-header"><b>First Names</b></li>
-            <li class="collection-item ">Alvin
-                <div class="secondary-content">
-                    <a href="#popup1"><i class="material-icons">settings</i></a>
-                </div>
+            {% for device in Devices %}
+                <li class="collection-item ">{{ device.name }}
+                    <div class="secondary-content">
 
-                <div class="secondary-content" style="margin-right: 15px">
-                    <div class="switch">
-                        <label>
-                            Off
-                            <!--CapacityChart(this);-->
-                            <input type="checkbox" onclick="">
-                            <span class="lever"></span>
-                            On
-                        </label>
+                        <form action="/config" method="post">
+                            {% csrf_token %}
+                            <button type="submit" name="device_name" value="{{ device.name }}" class="btn-link"><i
+                                    class="material-icons">settings</i></button>
+
+                        </form>
                     </div>
 
-                </div>
-            </li>
+                    <div class="secondary-content" style="margin-right: 15px">
+                        <div class="switch">
+                            <label>
+                                Off
+                                <input type="checkbox" checked="{{ device.state }}" value="{{ device.ip }}"
+                                       onclick="TurnLight(this)">
+                                <span class="lever"></span>
+                                On
+                            </label>
+                        </div>
+
+                    </div>
+                </li>
+            {% endfor %}
         </ul>
 
 
     </div>
 </main>
+{% for device in Devices %}
+    <div id="{{ device.name }}" class="overlay">
+        <div class="popup">
+            <a class="close" href="#">&times;</a>
+            <ul class="collection with-header">
+                <li class="collection-header"><b>Config
+                </b></li>
+                {% for conf in Configs %}
+                    <li class="collection-item ">{{ conf.name }}
+                        <div class="secondary-content">
+                            <a href="#{{ conf.name }}"><i class="material-icons">settings</i></a>
+                        </div>
+                    </li>
 
-<div id="popup1" class="overlay">
-	<div class="popup">
-		<h2>Here i am</h2>
-		<a class="close" href="#">&times;</a>
-		<div class="content">
-			OPTIONS
-		</div>
-	</div>
-</div>
+                    <div id="{{ conf.name }}" class="overlay">
+                        <div class="popup">
+                            <a class="close" href="#">&times;</a>
+                            <ul class="collection with-header">
+                                <li class="collection-header"><b>Config
+                                </b></li>
+                            </ul>
+                        </div>
+                    </div>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+{% endfor %}
 
 <script type="text/javascript">
-    function CapacityChart(input) {
-        if (input.checked) {
-            $.ajax({
-                url: '/api/turnLight/',
-                data: {
-                    'username': "12312"
-                },
-                success: function (data) {
-                    console.log(data)
-
-                }
-            });
-
+    function TurnLight(element) {
+        var ip = "http://" + element.value;
+        if (element.checked) {
+            ip += "/On";
+        } else {
+            ip += "/Off";
         }
+        $.ajax({
+            url: ip
+        });
 
 
     }

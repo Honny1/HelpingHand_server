@@ -1,35 +1,41 @@
 import socket
 import sys
+import threading
 
-# Create a TCP/IP socket
-sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+class ThreadedServer(object):
+    def __init__(self, host, port):
+        self.host = host
+        self.port = port
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.sock.bind((self.host, self.port))
 
-# Bind the socket to the port
-server_address = ('localhost', 10000)
-print('starting up on {} port {}'.format(*server_address))
-sock.bind(server_address)
-
-# Listen for incoming connections
-sock.listen(1)
-
-while True:
-    # Wait for a connection
-    print('waiting for a connection')
-    connection, client_address = sock.accept()
-    try:
-        print('connection from', client_address)
-
-        # Receive the data in small chunks and retransmit it
+    def listen(self):
+        self.sock.listen(5)
         while True:
+            connection, client_address = self.sock.accept()
+            connection.settimeout(60)
             data = connection.recv(16)
-            print('received {!r}'.format(data))
-            if data:
-                print('sending data back to the client')
-                connection.sendall(data)
-            else:
-                print('no data from', client_address)
-                break
+            threading.Thread(target = self.listenToClient,args = (connection)).start()
 
-    finally:
-        # Clean up the connection
-        connection.close()
+    def listenToClient(self, client):
+        size = 1024
+        while True:
+            try:
+                if data:
+                    if data == b'ON':
+                        print("ON")
+                        connection.sendall(b'o')
+                    elif data == b'OFF':
+                        print("OFF")
+                        connection.sendall(b'f')
+
+            except:
+                client.close()
+                return False
+
+if __name__ == "__main__":
+    while True:
+        ThreadedServer('192.168.2.148',8882).listen()
+
+
