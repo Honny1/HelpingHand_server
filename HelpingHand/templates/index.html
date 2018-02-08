@@ -41,8 +41,14 @@
                         <div class="switch">
                             <label>
                                 Off
-                                <input type="checkbox" checked="{{ device.state }}" value="{{ device.ip }}"
-                                       onclick="TurnLight(this)">
+                                {% if device.state %}
+                                    <input type="checkbox" checked value="{{ device.ip }}"
+                                           onclick="TurnLight(this)">
+                                {% else %}
+                                    <input type="checkbox" value="{{ device.ip }}"
+                                           onclick="TurnLight(this)">
+                                {% endif %}
+
                                 <span class="lever"></span>
                                 On
                             </label>
