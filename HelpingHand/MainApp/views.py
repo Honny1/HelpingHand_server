@@ -65,22 +65,51 @@ def register(request):
     if request.method == "POST":
         username = request.POST.get("username", "")
         password = request.POST.get("password1", "")
-        mail = request.POST.get("email", "")
-        if "" in [username, mail, password]:
+        email = request.POST.get("email", "")
+        if "" in [username, email, password]:
             return render(request, "registration.html", {"error": "Bad input!"})
 
-        if User.objects.filter(username=username, mail=mail).exists():
+        if User.objects.filter(username=username, email=email).exists():
             return render(request, "registration.html", {"error": "User already exists!"})
-
+        open("tabs/" + username + ".tab", "w+")
         request.session["username"] = username
-        User(mail=mail, username=username, password=password).save()
+        User(email=email, username=username, password=password).save()
         return redirect("/")
+
+
+def save_cron(username):
+    from crontab import CronTab
+    import os
+    cron = CronTab(tabfile="tabs/" + username + '.tab', user=True)
+    cron.remove_all()
+
+    data = Configuration.objects.filter(
+        device=Device.objects.filter(user=User.objects.filter(username=username).first()))
+    WEEK = {"Monday": "MON", "Tuesday": "TUE", "Wednesday": "WED", "Thursday": "THU", "Friday": "FRI",
+            "Saturday": "SAT",
+            "Sunday": "SUN"}
+    for config in data:
+        hour = config.hours
+        minutes = config.minutes
+        state = config.state
+        device_ip = config.device.ip
+        job = cron.new(command='python3 /home/mnecas/Desktop/Projects/HelpingHand/HelpingHand_server/HelpingHand/tabs/turn_light_script.py --ip ' + device_ip + ' --state ' + str(state))
+        week_day = []
+        for day in Day.objects.filter(configuration=config):
+            week_day.append(WEEK[day.name])
+        if week_day:
+            job.setall(minutes, hour, "*", "*", ",".join(week_day))
+        else:
+            job.setall(minutes, hour, "*", "*", "*")
+
+    cron.write()
+    os.system("crontab tabs/" + username + '.tab')
 
 
 def save_data(request):
     if request.method == "GET":
         return HttpResponse("W")
-    if request.method == "POST":    
+    if request.method == "POST":
         ids = request.POST.getlist("ids[]")
         hours = request.POST.getlist("hours[]")
         minutes = request.POST.getlist("minutes[]")
@@ -115,8 +144,10 @@ def save_data(request):
             config_id = day_with_id.split("-")[1]
             Day.objects.get_or_create(name=day_name, configuration=Configuration.objects.filter(id=config_id).first())
             for del_day in Day.objects.filter(configuration=Configuration.objects.filter(id=config_id).first()):
-                if not is_in_list(del_day.name+"-"+config_id, days):
+                if not is_in_list(del_day.name + "-" + config_id, days):
                     del_day.delete()
+
+        save_cron(request.session.get("username", ""))
         return redirect("/")
 
 
@@ -131,5 +162,5 @@ def add_config(request):
 
 
 def delete_config(request):
-    Configuration.objects.filter(id=request.POST.get("del_config","")).delete()
+    Configuration.objects.filter(id=request.POST.get("del_config", "")).delete()
     return redirect("/config")
