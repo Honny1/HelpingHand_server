@@ -80,15 +80,7 @@ def register(request):
 def save_data(request):
     if request.method == "GET":
         return HttpResponse("W")
-    if request.method == "POST":
-        WEEK_W_NUMBER = {"Monday": "1",
-                         "Tuesday": "2",
-                         "Wednesday": "3",
-                         "Thursday": "4",
-                         "Friday": "5",
-                         "Saturday": "6",
-                         "Sunday": "7",
-                         }
+    if request.method == "POST":    
         ids = request.POST.getlist("ids[]")
         hours = request.POST.getlist("hours[]")
         minutes = request.POST.getlist("minutes[]")
@@ -140,4 +132,4 @@ def add_config(request):
 
 def delete_config(request):
     Configuration.objects.filter(id=request.POST.get("del_config","")).delete()
-    return redirect("/")
+    return redirect("/config")

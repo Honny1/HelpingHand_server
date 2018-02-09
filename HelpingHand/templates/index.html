@@ -100,7 +100,10 @@
             ip += "/Off";
         }
         $.ajax({
-            url: ip
+            url: ip,
+            success: function(resp){
+                alert(resp)
+            }
         });
 
 
