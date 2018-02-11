@@ -5,7 +5,7 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.utils import json
 
 from MainApp.api.serializers import UserSerializer
-from MainApp.models import User, Device, Configuration
+from MainApp.models import User, Device, Configuration, Day
 
 
 @csrf_exempt
@@ -81,19 +81,52 @@ def turnLight(request):
 def deviceSave(request):
     if request.method == "POST":
         username = request.POST.get("username", "")
-        device_id= request.POST.get("device_id","")
-        device_name= request.POST.get("light_name","")
+        device_id = request.POST.get("device_id", "")
+        device_name = request.POST.get("light_name", "")
         Device.objects.filter(id=device_id).update(name=device_name)
-        return HttpResponse("succes")
+        return HttpResponse("success")
+
+
+@csrf_exempt
+def delete_config(request):
+    Configuration.objects.filter(id=int(request.POST.get("config_id", ""))).delete()
+    return HttpResponse("done")
+
+
+@csrf_exempt
+def add_config(request):
+    if request.method == "POST":
+        Configuration(name="config",
+                      device=Device.objects.filter(id=int(request.POST.get("device_id", ""))).first()).save()
+        return HttpResponse("done")
 
 
 @csrf_exempt
 def configSave(request):
     if request.method == "POST":
-        print(request.POST)
-        days = []
+
+        def is_in_list(obj, list):
+            for id in list:
+                if id == obj:
+                    return True
+            return False
+
+        days_name = {"0": "Monday",
+                     "1": "Tuesday",
+                     "2": "Wednesday",
+                     "3": "Thursday",
+                     "4": "Friday",
+                     "5": "Saturday",
+                     "6": "Sunday"}
+        days = {}
+        shorter_list = []
         for i in range(7):
-            days.append(request.POST.get("checkBoxes" + str(i), ""))
+            if request.POST.get(days_name[str(i)], "") == "true":
+                days[str(i)] = True
+                shorter_list.append(days_name[str(i)])
+            else:
+                days[str(i)] = False
+
         state = request.POST.get("state", "")
         config_name = request.POST.get("config_name", "")
         hours = request.POST.get("hours", "")
@@ -102,7 +135,19 @@ def configSave(request):
         device_name = request.POST.get("device_name", "")
         device_id = request.POST.get("device_id", "")
         config_id = request.POST.get("config_id", "")
-        Configuration.objects.filter(id=config_id,
-            device=Device.objects.filter(id=device_id).first()).update(hours=hours,minutes=minutes,name=config_name,state=state)
-        return HttpResponse("succes")
+        config = Configuration.objects.filter(id=int(config_id),
+                                              device=Device.objects.filter(id=int(device_id)).first())
+        bol_state = False
+        if state == "true":
+            bol_state = True
 
+        config.update(hours=hours, minutes=minutes, name=config_name, state=bol_state)
+        for key, value in days.items():
+            if value:
+                Day.objects.get_or_create(name=days_name[key], configuration=config.first())
+
+        for del_day in Day.objects.filter(configuration=config):
+            if not is_in_list(del_day.name, shorter_list):
+                del_day.delete()
+
+        return HttpResponse("success")

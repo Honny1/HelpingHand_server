@@ -119,7 +119,7 @@ def save_data(request):
         hours = request.POST.getlist("hours[]")
         minutes = request.POST.getlist("minutes[]")
         names = request.POST.getlist("config_names[]")
-        cliecked = request.POST.getlist("states[]")
+        clicked = request.POST.getlist("states[]")
 
         def is_in_list(obj, list):
             for id in list:
@@ -129,7 +129,7 @@ def save_data(request):
 
         states = []
         for id in copy(ids):
-            if is_in_list(id, cliecked):
+            if is_in_list(id, clicked):
                 states.append(True)
             else:
                 states.append(False)
