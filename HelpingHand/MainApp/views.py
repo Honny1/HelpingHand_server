@@ -50,11 +50,13 @@ def config(request):
     WEEK = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
     name = request.session["device_name"]
+    device=Device.objects.filter(name=name,
+                                     user=User.objects.filter(username=request.session.get("username", "")))
     config = Configuration.objects.filter(
-        device=Device.objects.filter(name=name,
-                                     user=User.objects.filter(username=request.session.get("username", ""))))
+        device=device)
     return render(request, "configs.html", {"Configs": config,
-                                            "Days": WEEK})
+                                            "Days": WEEK,
+                                            "device":device.first()})
 
 
 def register(request):
@@ -110,6 +112,9 @@ def save_data(request):
     if request.method == "GET":
         return HttpResponse("W")
     if request.method == "POST":
+        device_id = request.POST.get("device_id")
+        device_name = request.POST.get("device_name")
+        Device.objects.filter(id=device_id).update(name=device_name)
         ids = request.POST.getlist("ids[]")
         hours = request.POST.getlist("hours[]")
         minutes = request.POST.getlist("minutes[]")

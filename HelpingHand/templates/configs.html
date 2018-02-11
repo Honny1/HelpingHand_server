@@ -27,6 +27,11 @@
         <form action="/delete" method="post" id="deleteForm">{% csrf_token %}</form>
         <form action="/save_data" method="post">
             {% csrf_token %}
+			<input type="hidden" value="{{ device.id }}" name="device_id">
+            <label>
+                Light name:
+                <input type="text" style="color: #ffffff" value="{{ device.name }}" name="device_name">
+            </label>
             <ul class="collapsible" data-collapsible="accordion">
                 {% for config in Configs %}
                     <input type="hidden" value="{{ config.id }}" name="ids[]">

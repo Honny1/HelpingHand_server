@@ -102,7 +102,7 @@ def configSave(request):
         device_name = request.POST.get("device_name", "")
         device_id = request.POST.get("device_id", "")
         config_id = request.POST.get("config_id", "")
-        Configuration.objects.filter(id=int(config_id),
-            device=Device.objects.filter(id=int(device_id)).first()).update(hours=hours,minutes=minutes,name=config_name,state=state)
+        Configuration.objects.filter(id=config_id,
+            device=Device.objects.filter(id=device_id).first()).update(hours=hours,minutes=minutes,name=config_name,state=state)
         return HttpResponse("succes")
 
