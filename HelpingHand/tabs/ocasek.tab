@@ -1,2 +1,2 @@
-45 6 * * SUN,MON,TUE,WED,THU,FRI,SAT python3 /home/mnecas/Desktop/Projects/HelpingHand/HelpingHand_server/HelpingHand/tabs/turn_light_script.py --ip 192.168.2.104 --state True
-58 15 * * * python3 /home/mnecas/Desktop/Projects/HelpingHand/HelpingHand_server/HelpingHand/tabs/turn_light_script.py --ip 192.168.2.104 --state False
+3 8 * * SUN,MON,TUE,WED,THU,FRI,SAT python3 /home/mnecas/Desktop/Projects/HelpingHand/HelpingHand_server/HelpingHand/tabs/turn_light_script.py --ip 10.0.1.72 --state True
+20 10 * * SUN,MON,TUE,WED,THU,FRI,SAT python3 /home/mnecas/Desktop/Projects/HelpingHand/HelpingHand_server/HelpingHand/tabs/turn_light_script.py --ip 10.0.1.72 --state False

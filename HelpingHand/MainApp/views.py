@@ -10,14 +10,13 @@ def index(request):
     if request.method == "GET":
         if not request.session.get("username", ""):
             return redirect("/login")
-
         return render(request, "index.html",
                       {"Devices":
                           Device.objects.filter(
-                              user=User.objects.filter(username=request.session.get("username", ""))),
+                              user=User.objects.filter(username=request.session.get("username", "")).first()),
                           "Configs":
                               Configuration.objects.filter(device=Device.objects.filter(
-                                  user=User.objects.filter(username=request.session.get("username", "")))),
+                                  user=User.objects.filter(username=request.session.get("username", "")).first()).first()),
                           "Days":
                               Day.objects.filter(
                                   configuration=Configuration.objects.filter(device=Device.objects.filter(
@@ -51,9 +50,9 @@ def config(request):
 
     name = request.session["device_name"]
     device=Device.objects.filter(name=name,
-                                     user=User.objects.filter(username=request.session.get("username", "")))
+                                     user=User.objects.filter(username=request.session.get("username", "")).first())
     config = Configuration.objects.filter(
-        device=device)
+        device=device.first())
     return render(request, "configs.html", {"Configs": config,
                                             "Days": WEEK,
                                             "device":device.first()})
@@ -79,14 +78,14 @@ def register(request):
         return redirect("/")
 
 
-def save_cron(username):
+def save_cron(username,device_id):
     from crontab import CronTab
     import os
     cron = CronTab(tabfile="tabs/" + username + '.tab', user=True)
     cron.remove_all()
 
     data = Configuration.objects.filter(
-        device=Device.objects.filter(user=User.objects.filter(username=username).first()))
+        device=Device.objects.filter(id=device_id).first())
     WEEK = {"Monday": "MON", "Tuesday": "TUE", "Wednesday": "WED", "Thursday": "THU", "Friday": "FRI",
             "Saturday": "SAT",
             "Sunday": "SUN"}
@@ -95,6 +94,8 @@ def save_cron(username):
         minutes = config.minutes
         state = config.state
         device_ip = config.device.ip
+        #TODO rewrite to other devices(not hardoce way)
+
         job = cron.new(command='python3 /home/mnecas/Desktop/Projects/HelpingHand/HelpingHand_server/HelpingHand/tabs/turn_light_script.py --ip ' + device_ip + ' --state ' + str(state))
         week_day = []
         for day in Day.objects.filter(configuration=config):
@@ -152,7 +153,7 @@ def save_data(request):
                 if not is_in_list(del_day.name + "-" + config_id, days):
                     del_day.delete()
 
-        save_cron(request.session.get("username", ""))
+        save_cron(request.session.get("username", ""),device_id)
         return redirect("/")
 
 

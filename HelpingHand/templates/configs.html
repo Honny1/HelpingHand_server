@@ -32,7 +32,7 @@
                 Light name:
                 <input type="text" style="color: #ffffff" value="{{ device.name }}" name="device_name">
             </label>
-            <ul class="collapsible" data-collapsible="accordion">
+            <ul class="collapsible popout" data-collapsible="accordion">
                 {% for config in Configs %}
                     <input type="hidden" value="{{ config.id }}" name="ids[]">
                     <li>

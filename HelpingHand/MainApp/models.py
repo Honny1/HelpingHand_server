@@ -22,7 +22,7 @@ class User(models.Model):
 
 class Device(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='device')
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100,default="device")
     state = models.BooleanField(default=True)
     ip = models.GenericIPAddressField(default="127.0.0.1")
 
