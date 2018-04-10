@@ -72,11 +72,6 @@ def UserInfo(request):
             return HttpResponse("error")
 
 
-def turnLight(request):
-    os.system("python3 /home/mnecas/Desktop/Projects/HelpingHand/HelpingHand_server/socket_server/client.py")
-    return HttpResponse("test")
-
-
 @csrf_exempt
 def deviceSave(request):
     if request.method == "POST":
@@ -101,12 +96,12 @@ def add_config(request):
         return HttpResponse("done")
 
 
-def save_cron(username,device_id):
+def save_cron(username, device_id):
     from crontab import CronTab
     import os
     cron = CronTab(tabfile="tabs/" + username + '.tab', user=True)
     cron.remove_all()
-
+    print(os.getcwd())
     data = Configuration.objects.filter(
         device=Device.objects.filter(id=device_id).first())
     WEEK = {"Monday": "MON", "Tuesday": "TUE", "Wednesday": "WED", "Thursday": "THU", "Friday": "FRI",
@@ -117,9 +112,11 @@ def save_cron(username,device_id):
         minutes = config.minutes
         state = config.state
         device_ip = config.device.ip
-        #TODO rewrite to other devices(not hardoce way)
+        # TODO rewrite to other devices(not hardoce way)
 
-        job = cron.new(command='python3 /home/mnecas/Desktop/Projects/HelpingHand/HelpingHand_server/HelpingHand/tabs/turn_light_script.py --ip ' + device_ip + ' --state ' + str(state))
+        job = cron.new(
+            command='python3 '+os.getcwd()+'/tabs/turn_light_script.py --ip ' + device_ip + ' --state ' + str(
+                state))
         week_day = []
         for day in Day.objects.filter(configuration=config):
             week_day.append(WEEK[day.name])
@@ -130,6 +127,7 @@ def save_cron(username,device_id):
 
     cron.write()
     os.system("crontab tabs/" + username + '.tab')
+
 
 @csrf_exempt
 def configSave(request):
@@ -179,5 +177,5 @@ def configSave(request):
         for del_day in Day.objects.filter(configuration=config.first()):
             if not is_in_list(del_day.name, shorter_list):
                 del_day.delete()
-        save_cron(username,device_id)
+        save_cron(username, device_id)
         return HttpResponse("success")

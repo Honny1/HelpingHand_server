@@ -89,6 +89,7 @@ def save_cron(username,device_id):
     WEEK = {"Monday": "MON", "Tuesday": "TUE", "Wednesday": "WED", "Thursday": "THU", "Friday": "FRI",
             "Saturday": "SAT",
             "Sunday": "SUN"}
+
     for config in data:
         hour = config.hours
         minutes = config.minutes
@@ -96,7 +97,7 @@ def save_cron(username,device_id):
         device_ip = config.device.ip
         #TODO rewrite to other devices(not hardoce way)
 
-        job = cron.new(command='python3 /home/mnecas/Desktop/Projects/HelpingHand/HelpingHand_server/HelpingHand/tabs/turn_light_script.py --ip ' + device_ip + ' --state ' + str(state))
+        job = cron.new(command='python3 '+os.getcwd()+'/tabs/turn_light_script.py --ip ' + device_ip + ' --state ' + str(state))
         week_day = []
         for day in Day.objects.filter(configuration=config):
             week_day.append(WEEK[day.name])
@@ -106,7 +107,7 @@ def save_cron(username,device_id):
             job.setall(minutes, hour, "*", "*", "*")
 
     cron.write()
-    os.system("crontab tabs/" + username + '.tab')
+    os.system("crontab "+os.getcwd()+"/tabs/" + username + '.tab')
 
 
 def save_data(request):
